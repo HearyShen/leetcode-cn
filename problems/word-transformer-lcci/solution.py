@@ -1,4 +1,9 @@
+import argparse
 from typing import List
+
+parser = argparse.ArgumentParser(__name__)
+parser.add_argument("-p", "--print-freq", default=1000)
+args = parser.parse_args()
 
 class Solution:
     def findLadders(self, beginWord: str, endWord: str, wordList: List[str]) -> List[str]:
@@ -6,16 +11,19 @@ class Solution:
         if len(endWord) != len(beginWord) or not (endWord in words):
             return []
 
+        bfs_count = 0
+        self.nextWords = dict()
         bfs_queue = []
         bfs_queue.append([beginWord])
         while len(bfs_queue) > 0:
             cur_path = bfs_queue[0]
             cur_word = cur_path[-1]
-            print(cur_path)
+            if bfs_count % args.print_freq == 0:
+                print(f"BFS count: {bfs_count}, Now: {cur_path}.")
             if cur_word == endWord:
                 return cur_path
 
-            nextStepWords = self.findNextWords(cur_word, endWord, words - set(cur_path))
+            nextStepWords = self.findNextWords(cur_word, endWord, words) - set(cur_path)
             for nextWord in nextStepWords:
                 nextPath = cur_path.copy()
                 nextPath.append(nextWord)
@@ -23,16 +31,23 @@ class Solution:
 
             # basic BFS
             bfs_queue.remove(cur_path)
+            bfs_count += 1
         return []
 
-    @staticmethod
-    def findNextWords(beginWord: str, endWord: str, words: set) -> set:
+    def findNextWords(self, beginWord: str, endWord: str, words: set) -> set:
         """Returns the words valid for next step."""
-        oneDiffWords = set()
-        for word in words:
-            if Solution.charDiffCount(beginWord, word) == 1:
-                oneDiffWords.add(word)
-        return oneDiffWords
+        try:
+            cachedNextWords = self.nextWords[beginWord]
+        except KeyError:
+            oneDiffWords = set()
+            for word in words:
+                if Solution.charDiffCount(beginWord, word) == 1:
+                    oneDiffWords.add(word)
+            self.nextWords[beginWord] = oneDiffWords
+            return oneDiffWords
+        else:
+            return cachedNextWords
+        
 
     @staticmethod
     def charDiffCount(srcWord: str, destWord: str) -> int:
