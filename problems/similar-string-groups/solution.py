@@ -10,7 +10,7 @@ class Solution:
     def numSimilarGroups(self, A: List[str]) -> int:
         """Returns the count of similar string groups."""
         words = set(A)
-        self.buildSimilarDict(words)
+        self.buildSimilarDict(A, len(A), len(A[0]))
 
         groupCount = 0
         while words:
@@ -30,13 +30,29 @@ class Solution:
                 groupCount += 1
         return groupCount
 
-    def buildSimilarDict(self, words: set):
+    def buildSimilarDict(self, words: set, wordsCount:int, wordLen:int):
+        if wordsCount > wordLen:
+            findSimilarWords = self.findSimilarWordsA   # O(N * W^2)
+        else:
+            findSimilarWords = self.findSimilarWordsB   # O(N^2 * W)
+        
         for word in words:
             # similarDict: size(len(words), len(word))
-            self.similarDict[word] = self.findSimilarWords(word, words)
+            self.similarDict[word] = findSimilarWords(word, words)
 
-    def findSimilarWords(self, curWord: str, words: set) -> set:
-        """Return all similar words of a word."""
+    def findSimilarWordsA(self, word: str, words: set) -> set:
+        """Return all similar words of a word. O(W^2)"""
+        similarWords = set()
+        for i in range(len(word)):
+            for j in range(i + 1, len(word)):
+                similarWord = word[:i] + word[j] + word[i + 1:j] + word[
+                    i] + word[j + 1:]  # replace i, j
+                if similarWord in words:
+                    similarWords.add(similarWord)
+        return similarWords
+
+    def findSimilarWordsB(self, curWord: str, words: set) -> set:
+        """Return all similar words of a word. O(NW)"""
         similarWords = set()
         for word in words:
             if self.isSimilar(curWord, word):
@@ -44,10 +60,9 @@ class Solution:
         return similarWords
 
     def isSimilar(self, wordA, wordB):
-        """Returns if two words is similar(2 chars swapped)."""
+        """Returns if two words is similar(2 chars swapped). O(W)"""
         if len(wordA) != len(wordB):
             return False
-
         diffCount = 0
         diffChars = set()
         for i in range(len(wordA)):
