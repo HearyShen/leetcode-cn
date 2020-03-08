@@ -9,13 +9,13 @@ class Solution:
             return 0
 
         bfsQueue = []
-        for coin in coins:
+        for coin in sorted(coins, reverse=True):
             bfsQueue.append([coin])
 
         while bfsQueue:
             curPath = bfsQueue[0]
-            
             curSum = sum(curPath)
+            print(f"{curPath}, total: {curSum}.")
             if curSum == amount:
                 # print(curPath)
                 return len(curPath)
@@ -23,7 +23,7 @@ class Solution:
                 pass    # do nothing, no bfsQueue add
             else:
                 # find nexts
-                for coin in coins:
+                for coin in sorted(coins, reverse=True):
                     if curSum + coin <= amount:
                         bfsQueue.append(curPath + [coin])
 
