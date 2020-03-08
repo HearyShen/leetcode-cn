@@ -5,34 +5,26 @@ from typing import List
 class Solution:
     def coinChange(self, coins: List[int], amount: int) -> int:
         """Use BFS to find the shortest coin change path."""
-        if amount == 0:
-            return 0
+        coinsHigh2Small = sorted(coins, reverse=True)
+        return self.dfsCoinChange(coinsHigh2Small, [], amount)
 
-        bfsQueue = []
-        for coin in sorted(coins, reverse=True):
-            bfsQueue.append([coin])
-
-        while bfsQueue:
-            curPath = bfsQueue[0]
-            curSum = sum(curPath)
-            print(f"{curPath}, total: {curSum}.")
-            if curSum == amount:
-                # print(curPath)
-                return len(curPath)
-            elif curSum > amount:
-                pass    # do nothing, no bfsQueue add
-            else:
-                # find nexts
-                for coin in sorted(coins, reverse=True):
-                    if curSum + coin <= amount:
-                        bfsQueue.append(curPath + [coin])
-
-            bfsQueue.remove(bfsQueue[0])
+    def dfsCoinChange(self, coins: List[int], plan: List[int], amount: int) -> int:
+        sumCoins = sum(plan)
+        if sumCoins == amount:
+            print(f"Found {plan}.")
+            return len(plan)
+        elif sumCoins > amount:
+            return -1
+        else:
+            for coin in coins:
+                retSum = self.dfsCoinChange(coins, plan + [coin], amount)
+                if retSum > 0:      # if found, then return to root, else, ignore it.
+                    return retSum
         return -1
 
 
 if __name__ == "__main__":
-    testcases = [([1, 2, 5], 11, 3), ([1], 0, 0), ([1,2,5], 100, 20)]
+    testcases = [([1, 2, 5], 11, 3), ([1], 0, 0), ([1, 2, 5], 100, 20), ([186,419,83,408], 6249, 26)]
 
     for i, testcase in enumerate(testcases):
         coins, amount, ans = testcase
