@@ -3,28 +3,54 @@ from typing import List
 
 
 class Solution:
+    def __init__(self):
+        self.leastCoinsDP = {}  # {amount: leastCoins}
+
     def coinChange(self, coins: List[int], amount: int) -> int:
         """Use BFS to find the shortest coin change path."""
         coinsHigh2Small = sorted(coins, reverse=True)
-        return self.dfsCoinChange(coinsHigh2Small, [], amount)
+        return self.dfsCoinChange(coinsHigh2Small, amount)
 
-    def dfsCoinChange(self, coins: List[int], plan: List[int], amount: int) -> int:
-        sumCoins = sum(plan)
-        if sumCoins == amount:
-            print(f"Found {plan}.")
-            return len(plan)
-        elif sumCoins > amount:
+    def dfsCoinChange(self, coins: List[int], amount) -> int:
+        if amount == 0:
+            return 0
+        elif amount < 0:
             return -1
         else:
-            for coin in coins:
-                retSum = self.dfsCoinChange(coins, plan + [coin], amount)
-                if retSum > 0:      # if found, then return to root, else, ignore it.
-                    return retSum
-        return -1
+            try:
+                leastCoin = self.leastCoinsDP[amount]
+            except KeyError:
+                subPlans = [
+                    self.dfsCoinChange(coins, amount - coin) for coin in coins
+                ]
+                if max(subPlans) >= 0:
+                    self.leastCoinsDP[amount] = min([
+                        plan + 1 for plan in subPlans if plan >= 0
+                    ])  # add the current coin (plan+1)
+                else:
+                    self.leastCoinsDP[amount] = -1
+                return self.leastCoinsDP[amount]
+            else:
+                return leastCoin
+
+    # def dfsCoinChange(self, coins: List[int], plan: List[int], amount: int) -> int:
+    #     sumCoins = sum(plan)
+    #     if sumCoins == amount:
+    #         print(f"Found {plan}.")
+    #         return len(plan)
+    #     elif sumCoins > amount:
+    #         return -1
+    #     else:
+    #         for coin in coins:
+    #             retSum = self.dfsCoinChange(coins, plan + [coin], amount)
+    #             if retSum > 0:      # if found, then return to root, else, ignore it.
+    #                 return retSum
+    #     return -1
 
 
 if __name__ == "__main__":
-    testcases = [([1, 2, 5], 11, 3), ([1], 0, 0), ([1, 2, 5], 100, 20), ([186,419,83,408], 6249, 26)]
+    testcases = [([1, 2, 5], 11, 3), ([1], 0, 0), ([1, 2, 5], 100, 20),
+                 ([186, 419, 83, 408], 6249, 20)]
 
     for i, testcase in enumerate(testcases):
         coins, amount, ans = testcase
