@@ -57,12 +57,12 @@ class Solution:
                 atomName += char
             elif char.isdigit():
                 atomDigits += char
-        
-        self.atomsCount[atomName] += Solution.parseDigits(atomDigits) * multiply
+        if atomName:    # the last one hasn't been written to dict in the loop
+            self.atomsCount[atomName] += Solution.parseDigits(atomDigits) * multiply
 
         
 if __name__ == "__main__":
-    testCases = [("H2O", "H2O"), ("Mg(OH)2", "H2MgO2"), ("K4(ON(SO3)2)2", "K4N2O14S4")]
+    testCases = [("H2O", "H2O"), ("Mg(OH)2", "H2MgO2"), ("K4(ON(SO3)2)2", "K4N2O14S4"), ("((HHe28Be26He)9)34", "Be7956H306He8874")]
 
     for i, testCase in enumerate(testCases):
         formula, ans = testCase
