@@ -11,6 +11,24 @@ class Solution:
             return int(digits)
         else:
             return fallback
+    
+    @staticmethod
+    def scanSurfaceParentheses(formula: str) -> list:
+        surfaceParenteses = []
+        idxStack = []
+        pStack = []
+        for i, char in enumerate(formula):
+            if char in {'(', ')'}:
+                if pStack and pStack[-1] == '(' and char == ')':
+                    indexLeft = idxStack.pop()
+                    parenthesis = pStack.pop()
+                    if len(pStack) == 0:    # if the surface layer
+                        surfaceParenteses.append((indexLeft, i))    # left, right index
+                else:
+                    idxStack.append(i)
+                    pStack.append(char)
+        return surfaceParenteses
+            
         
     def countOfAtoms(self, formula: str) -> str:
         self.recursiveCountOfAtoms(formula)
@@ -25,25 +43,30 @@ class Solution:
 
     def recursiveCountOfAtoms(self, formula: str, multiply=1):
         # call recursive function to deal with inner formula
-        leftParenthesisIndex = formula.find('(')
-        rightParenthesisIndex = formula.rfind(')')
-        innerFormulaEnding = rightParenthesisIndex
-        if leftParenthesisIndex >=0 and rightParenthesisIndex < len(formula):
-            digitStr = ''
-            for i in range(rightParenthesisIndex + 1, len(formula)):
-                if formula[i].isdigit():
-                    digitStr += formula[i]
-                else:
-                    break
-            innerFormulaEnding = rightParenthesisIndex + len(digitStr)
-            innerMultiply = Solution.parseDigits(digitStr)
-            self.recursiveCountOfAtoms(formula[leftParenthesisIndex+1:rightParenthesisIndex], innerMultiply * multiply)
-        else:
-            leftParenthesisIndex = 0
-            rightParenthesisIndex = 0
+        sectionToRemove = []
+        surfaceParenthesisIndexes = Solution.scanSurfaceParentheses(formula)
+        for leftParenthesisIndex, rightParenthesisIndex in surfaceParenthesisIndexes:
+            innerFormulaEnding = rightParenthesisIndex
+            if leftParenthesisIndex >=0 and rightParenthesisIndex < len(formula):
+                digitStr = ''
+                for i in range(rightParenthesisIndex + 1, len(formula)):
+                    if formula[i].isdigit():
+                        digitStr += formula[i]
+                    else:
+                        break
+                innerFormulaEnding = rightParenthesisIndex + len(digitStr)
+                innerMultiply = Solution.parseDigits(digitStr)
+                sectionToRemove.append((leftParenthesisIndex, innerFormulaEnding))
+                self.recursiveCountOfAtoms(formula[leftParenthesisIndex+1:rightParenthesisIndex], innerMultiply * multiply)
         
         # deal with the formula left
-        formulaLeft = formula[0:leftParenthesisIndex] + formula[innerFormulaEnding+1:]
+        formulaLeft = ''
+        lastEnding = 0
+        for leftIndex, rightIndex in sectionToRemove:
+            formulaLeft += formula[lastEnding:leftIndex]
+            lastEnding = rightIndex + 1
+        formulaLeft += formula[lastEnding:]
+
         atomName, atomDigits = '', ''
         for char in formulaLeft:
             if char.isupper():
@@ -62,7 +85,7 @@ class Solution:
 
         
 if __name__ == "__main__":
-    testCases = [("H2O", "H2O"), ("Mg(OH)2", "H2MgO2"), ("K4(ON(SO3)2)2", "K4N2O14S4"), ("((HHe28Be26He)9)34", "Be7956H306He8874")]
+    testCases = [("H2O", "H2O"), ("Mg(OH)2", "H2MgO2"), ("K4(ON(SO3)2)2", "K4N2O14S4"), ("((HHe28Be26He)9)34", "Be7956H306He8874"), ("((N42)24(OB40Li30CHe3O48LiNN26)33(C12Li48N30H13HBe31)21(BHN30Li26BCBe47N40)15(H5)16)14", "B18900Be18984C4200H5446He1386Li33894N50106O22638")]
 
     for i, testCase in enumerate(testCases):
         formula, ans = testCase
