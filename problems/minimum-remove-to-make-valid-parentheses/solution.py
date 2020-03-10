@@ -3,8 +3,23 @@ import time
 
 class Solution:
     def minRemoveToMakeValid(self, s: str) -> str:
-        # TODO: 2020.3.9
+        idxStack = []
+        pStack = []
+        chars = list(s)
+        for i, char in enumerate(chars):
+            if char in {'(', ')'}:
+                if pStack and char == ')' and pStack[-1] == '(':
+                    idxStack.pop()
+                    pStack.pop()
+                else:
+                    idxStack.append(i)
+                    pStack.append(char)
+        
+        idxSet = set(idxStack)
+        # print(idxStack)
+        return ''.join([chars[i] for i in range(len(chars)) if i not in idxSet])
 
+        
 
 if __name__ == "__main__":
     testCases = [("lee(t(c)o)de)", "lee(t(c)o)de"), ("a)b(c)d", "ab(c)d"), ("))((", ""), ("(a(b(c)d)", "a(b(c)d)")]
