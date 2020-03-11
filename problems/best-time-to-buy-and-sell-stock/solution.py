@@ -4,10 +4,28 @@ from typing import List
 
 class Solution:
     def maxProfit(self, prices: List[int]) -> int:
-        maxInterest = [0]
-        for buyDay, buyPrice in enumerate(prices):
-            maxInterest.append(max(prices[buyDay:]) - buyPrice)
-        return max(maxInterest)
+        if not prices:  # if not valid
+            return 0
+
+        maxPrice = max(prices)
+        minPrice = min(prices)
+        maxIndex = prices.index(maxPrice)
+        minIndex = prices.index(minPrice)
+
+        if minIndex <= maxIndex:
+            return maxPrice - minPrice
+        else:
+            # for left, find min
+            minInLeft = min(prices[:maxIndex+1])
+            maxProfitInLeft = maxPrice - minInLeft
+
+            # for middle
+            maxProfitInMid = self.maxProfit(prices[maxIndex+1:minIndex])
+
+            # for right, find max
+            maxInRight = max(prices[minIndex:])
+            maxProfitInRight = maxInRight - minPrice
+            return max([maxProfitInLeft, maxProfitInMid, maxProfitInMid])
 
 
 if __name__ == "__main__":
