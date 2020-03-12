@@ -1,14 +1,14 @@
 import time
 from typing import List
-import copy
 
 
 class Solution:
     def getMaximumGold(self, grid: List[List[int]]) -> int:
-        goldPlans = set()
-        for y in range(len(grid)):
-            for x in range(len(grid[0])):
-                goldPlans.add(self.dfsDigGold(grid, (y, x)))
+        # goldPlans = set()
+        # for y in range(len(grid)):
+        #     for x in range(len(grid[0])):
+        #         goldPlans.add(self.dfsDigGold(grid, (y, x)))
+        goldPlans = [self.dfsDigGold(grid, (y,x)) for y in range(len(grid)) for x in range(len(grid[0])) if grid[y][x] != 0]
         return max(goldPlans)
 
     def dfsDigGold(self, grid: List[List[int]], loc) -> int:
@@ -18,21 +18,21 @@ class Solution:
         if curGold == 0:
             return 0
         else:
-            curGrid = copy.deepcopy(grid)
-            curGrid[y][x] = 0
+            grid[y][x] = 0
             goldPlans = [0]  # default as 0 (may have no where to dig)
             if y - 1 >= 0:  # dig north
                 goldPlans.append(
-                    self.dfsDigGold(curGrid, (y - 1, x)) + curGold)
+                    self.dfsDigGold(grid, (y - 1, x)) + curGold)
             if y + 1 < y_len:  # dig south
                 goldPlans.append(
-                    self.dfsDigGold(curGrid, (y + 1, x)) + curGold)
+                    self.dfsDigGold(grid, (y + 1, x)) + curGold)
             if x - 1 >= 0:  # dig west
                 goldPlans.append(
-                    self.dfsDigGold(curGrid, (y, x - 1)) + curGold)
+                    self.dfsDigGold(grid, (y, x - 1)) + curGold)
             if x + 1 < x_len:  # dig east
                 goldPlans.append(
-                    self.dfsDigGold(curGrid, (y, x + 1)) + curGold)
+                    self.dfsDigGold(grid, (y, x + 1)) + curGold)
+            grid[y][x] = curGold
             return max(goldPlans)
 
 
