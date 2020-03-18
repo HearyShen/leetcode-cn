@@ -4,11 +4,6 @@ from collections import Counter
 
 
 class Solution:
-    def isValidStr(self, wordsCounter: Counter, s: str, wordLen: int) -> bool:
-        wordsCounterOfS = Counter(
-            [s[i:i + wordLen] for i in range(0, len(s), wordLen)])
-        return wordsCounter == wordsCounterOfS
-
     def findSubstring(self, s: str, words: List[str]) -> List[int]:
         if not s or not words:
             return []
@@ -19,10 +14,10 @@ class Solution:
         strLen = wordLen * wordCount
         validIndexes = []
         for i in range(len(s) - strLen + 1):
-            curWord = s[i:i + wordLen]
-            if curWord in firstWords:
+            if s[i:i + wordLen] in firstWords:
                 possibleStr = s[i:i + strLen]
-                if self.isValidStr(wordsCounter, possibleStr, wordLen):
+                wordsCounterOfS = Counter([possibleStr[i:i + wordLen] for i in range(0, len(possibleStr), wordLen)])
+                if wordsCounter == wordsCounterOfS:
                     validIndexes.append(i)
         return validIndexes
 
