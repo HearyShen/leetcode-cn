@@ -4,6 +4,7 @@ from typing import List
 
 class Solution:
     def countSmaller(self, nums: List[int]) -> List[int]:
+        # TODO: 2020.3.18, basic traverse is too slow for long testcase
         counts = [0 for i in range(len(nums))]  # default as all-0
         for i in range(len(nums)):
             counts[i] += sum([int(nums[j] < nums[i]) for j in range(i+1, len(nums))])
