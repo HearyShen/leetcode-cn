@@ -1,10 +1,18 @@
 import time
 from typing import List
+from collections import defaultdict
 
 class Solution:
     def minJumps(self, arr: List[int]) -> int:
         if not arr:
             return 0
+
+        valueIndexes = defaultdict(set)     # IMPORTANT: cache same-value indexes in O(N)
+        for i in range(len(arr)):
+            if i-1>=0 and i+1<len(arr) and arr[i-1]==arr[i]==arr[i+1]:
+                continue
+            valueIndexes[str(arr[i])].add(i)
+
         startIndex, endIndex = 0, len(arr)-1
         hasSearched = [False for i in range(len(arr))]
         bfsQueue = [[startIndex]]
@@ -23,12 +31,12 @@ class Solution:
                 bfsQueue.append(curPath + [i-1])
                 hasSearched[i-1] = True
             # arr[i] == arr[j]
-            nextJs = [j for j in range(len(arr)) if arr[j]==arr[i] and j != i and not hasSearched[j]]
+            nextJs = [j for j in valueIndexes[str(arr[i])] if j!=i and not hasSearched[j]]
             for j in nextJs:
                 bfsQueue.append(curPath + [j])
                 hasSearched[j] = True
             # basic BFS operation
-            bfsQueue.remove(curPath)
+            bfsQueue.pop(0)
         return 0
 
 
