@@ -1,36 +1,48 @@
 import time
+from collections import Counter
+
 
 class Solution:
     def minWindow(self, s: str, t: str) -> str:
-        if not s or not t:
+        if not s or not t or len(s) < len(t):
             return ""
-        
+
         l, r = 0, 0
         minWindowLen = len(s)
-        targetChars = set(list(t))
+        minWindowStr = ""
+        targetChars = Counter(t)
+        curChars = Counter(s[l:r])
         while r <= len(s):
-            curChars = set(list(s[l:r]))
-            print(curChars)
+            # print(curChars)
             if targetChars - curChars:
                 # if still need to match
                 r += 1
+                # print(r)
+                if r <= len(s):
+                    curChars[s[r-1]] += 1
             else:
                 # if all found
                 # shrink the left border
-                for newL in range(l, r):
-                    if targetChars - set(list(s[newL:r])):
+                if r - l <= minWindowLen:  # if the raw str is min
+                    minWindowLen = r - l
+                    minWindowStr = s[l:r]
+                for newL in range(l+1, r+1):  # if the shrinked str is min
+                    curChars[s[newL-1]] -= 1 
+                    if targetChars - curChars:
                         l = newL - 1
-                        if r-l <= minWindowLen:
-                            minWindowLen = r-l
+                        curChars[s[l]] += 1
+                        if r - l < minWindowLen:
+                            minWindowLen = r - l
                             minWindowStr = s[l:r]
-                        l = newL
                         break
+                l = l + 1  # whether shrinked or not, move window to find next
+                curChars[s[l-1]] -= 1
         return minWindowStr
 
-        
 
 if __name__ == "__main__":
-    testCases = [("ADOBECODEBANC", "ABC", "BANC"), ("a", "a", "a")]
+    testCases = [("ADOBECODEBANC", "ABC", "BANC"), ("a", "a", "a"),
+                 ("a", "aa", ""), ("ab", "b", "b")]
     for i, testCase in enumerate(testCases):
         S, T, ans = testCase
         tic = time.time()
