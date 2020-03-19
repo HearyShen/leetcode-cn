@@ -10,6 +10,7 @@ class Solution:
 
     def numSimilarGroups(self, A: List[str]) -> int:
         """Returns the count of similar string groups."""
+        # BUG: 2020.3.4, failed, not fast enough
         words = set(A)
         self.buildSimilarDict(A, len(A), len(A[0]))
 
