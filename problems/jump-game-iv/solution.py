@@ -1,45 +1,36 @@
 import time
 from typing import List
-from collections import defaultdict
+from collections import defaultdict, deque
 
 class Solution:
     def minJumps(self, arr: List[int]) -> int:
         if not arr:
             return 0
 
-        valueIndexes = defaultdict(set)     # IMPORTANT: cache same-value indexes in O(N)
-        for i in range(len(arr)):
-            if i-1>=0 and i+1<len(arr) and arr[i-1]==arr[i]==arr[i+1]:
-                continue
-            valueIndexes[str(arr[i])].add(i)
+        valueIndexes = defaultdict(list)     # IMPORTANT: cache same-value indexes in O(N)
+        for i, a in enumerate(arr):
+            if (i-1>=0 and arr[i-1]!=arr[i]) or (i+1<len(arr) and arr[i+1]!=arr[i]):
+                valueIndexes[a].append(i)
 
         startIndex, endIndex = 0, len(arr)-1
-        hasSearched = [False for i in range(len(arr))]
-        bfsQueue = [[startIndex]]
-        hasSearched[startIndex] = True
+        hasSearched = set()
+        hasSearched.add(startIndex)
+        bfsQueue = deque([])
+        bfsQueue.append(startIndex)     # put only index in bfsQueue instead of path list, list operation really costs!
+        jumpCount = 0
         while bfsQueue:
-            curPath = bfsQueue[0]
-            # print(curPath)
-            i = curPath[-1]
-            if i == endIndex:  # if reached last index
-                return len(curPath) - 1
-            # otherwise, append BFS path to bfsQueue
-            if i + 1 < len(arr) and not hasSearched[i+1]:  # j=i+1
-                bfsQueue.append(curPath + [i+1])
-                hasSearched[i+1] = True
-            if i - 1 >= 0 and not hasSearched[i-1]:      # j=i-1
-                bfsQueue.append(curPath + [i-1])
-                hasSearched[i-1] = True
-            # arr[i] == arr[j]
-            nextJs = [j for j in valueIndexes[str(arr[i])] if j!=i and not hasSearched[j]]
-            for j in nextJs:
-                bfsQueue.append(curPath + [j])
-                hasSearched[j] = True
-            # basic BFS operation
-            bfsQueue.pop(0)
+            for _ in range(len(bfsQueue)):
+                i = bfsQueue.popleft()
+                # print(curPath)
+                if i == endIndex:  # if reached last index
+                    return jumpCount
+
+                for j in [i-1, i+1] + valueIndexes[arr[i]]:
+                    if j >= 0 and j<len(arr) and j != i and j not in hasSearched:
+                        bfsQueue.append(j)
+                        hasSearched.add(j)
+            jumpCount += 1
         return 0
-
-
 
 
 if __name__ == "__main__":
