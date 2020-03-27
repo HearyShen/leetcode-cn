@@ -1,17 +1,16 @@
 import time
 from typing import List
-
+from collections import Counter
 
 class Solution:
     def countSmaller(self, nums: List[int]) -> List[int]:
-        # TODO: 2020.3.27, count with merge-sort is too slow for long testcase
         self.index2num = {index:num for index, num in enumerate(nums)}
         self.indexes = [i for i in range(len(nums))]
-        self.counts = [0] * len(nums)
+        self.counts = Counter()
 
         self.mergeSort(self.indexes)
 
-        return self.counts
+        return [self.counts[i] for i in range(len(nums))]
 
     def merge(self, left: List[int], right: List[int]):
         merged = []
@@ -21,9 +20,8 @@ class Solution:
                 merged.append(left.pop(0))
             else:
                 merged.append(right.pop(0))
-                # TODO: 2020.3.27, the following codes cost too much time, over 10s for long testcase
-                for lIdx in left:           # if nums in right is larger than the left num(s), 
-                    self.counts[lIdx] += 1  # then all left nums should count one more reverse num
+                self.counts.update(left)    # NOTE: key operation, time consuming!
+
         merged.extend(left)
         merged.extend(right)
         return merged
