@@ -21,6 +21,7 @@ class Solution:
                 merged.append(left.pop(0))
             else:
                 merged.append(right.pop(0))
+                # TODO: 2020.3.27, the following codes cost too much time, over 10s for long testcase
                 for lIdx in left:           # if nums in right is larger than the left num(s), 
                     self.counts[lIdx] += 1  # then all left nums should count one more reverse num
         merged.extend(left)
