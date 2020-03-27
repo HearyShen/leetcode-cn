@@ -4,11 +4,39 @@ from typing import List
 
 class Solution:
     def countSmaller(self, nums: List[int]) -> List[int]:
-        # TODO: 2020.3.18, basic traverse is too slow for long testcase
-        counts = [0 for i in range(len(nums))]  # default as all-0
-        for i in range(len(nums)):
-            counts[i] += sum([int(nums[j] < nums[i]) for j in range(i+1, len(nums))])
-        return counts
+        # TODO: 2020.3.27, count with merge-sort is too slow for long testcase
+        self.index2num = {index:num for index, num in enumerate(nums)}
+        self.indexes = [i for i in range(len(nums))]
+        self.counts = [0] * len(nums)
+
+        self.mergeSort(self.indexes)
+
+        return self.counts
+
+    def merge(self, left: List[int], right: List[int]):
+        merged = []
+        while left and right:
+            leftIndex, rightIndex = left[0], right[0]
+            if self.index2num[leftIndex] <= self.index2num[rightIndex]:
+                merged.append(left.pop(0))
+            else:
+                merged.append(right.pop(0))
+                for lIdx in left:           # if nums in right is larger than the left num(s), 
+                    self.counts[lIdx] += 1  # then all left nums should count one more reverse num
+        merged.extend(left)
+        merged.extend(right)
+        return merged
+
+
+    def mergeSort(self, nums: List[int]) -> List[int]:
+        numsLen = len(nums)
+        if numsLen > 1:
+            mid = int(numsLen/2)
+            left = self.mergeSort(nums[0:mid])
+            right = self.mergeSort(nums[mid:])
+            return self.merge(left, right)
+        else:
+            return nums
 
 
 if __name__ == "__main__":
