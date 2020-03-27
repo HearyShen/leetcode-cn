@@ -1,38 +1,38 @@
 import time
 from typing import List
+from collections import defaultdict
 
 
 class Solution:
     def networkDelayTime(self, times: List[List[int]], N: int, K: int) -> int:
-        if not times or N < 1 or K < 1:
-            return -1
+        # dijkstra shortest-path algorithm
+        graph = defaultdict(list)
+        for u, v, w in times:
+            graph[u].append((v, w))
 
-        delays = [[-1 for i in range(N)] for i in range(N)]  # default as -1
+        # initialize distance
+        dist = {node: float('inf') for node in range(1, N+1)}   # distances are default as inf
+        dist[K] = 0     # single source from node K
+        seen = [False] * (N+1)
+        
+        while True:
+            # find min-dist node from source
+            minDistNode = -1
+            cand_dist = float('inf')
+            for i in range(1, N+1):
+                if not seen[i] and dist[i] < cand_dist:
+                    cand_dist = dist[i]
+                    minDistNode = i
+            # if all node have been seen
+            if minDistNode < 0: 
+                break
+            else:
+                seen[minDistNode] = True
+                for neighbor, dist2neighbor in graph[minDistNode]:    # find min distance to candidate's neighbors
+                    dist[neighbor] = min(dist[neighbor], dist[minDistNode] + dist2neighbor)
 
-        # set default weight matrix
-        for timeIn in times:
-            u, v, w = timeIn
-            delays[u - 1][v - 1] = w
-
-        # maxDelay = 0
-        nodeDelays = [-1 for i in range(N)]
-        visited = set()
-        bfsQueue = [(K - 1, 0)]
-        while bfsQueue:
-            curNode, curDelay = bfsQueue.pop(0)
-            visited.add(curNode)
-            if nodeDelays[curNode] < 0 or nodeDelays[curNode] > curDelay:
-                nodeDelays[curNode] = curDelay
-            print(f"{curNode+1}: {curDelay}")
-            # find next
-            for nextNode, nextDelay in enumerate(delays[curNode]):
-                if nextDelay >= 0 and nextNode not in visited:  # valid node
-                    bfsQueue.append((nextNode, curDelay + nextDelay))
-                    print(f"{curNode+1}->{nextNode+1}: {curDelay+nextDelay}")
-
-        if len(visited) == N:
-            return max(nodeDelays)
-        return -1
+        ans = max(dist.values())
+        return ans if ans < float('inf') else -1
 
 
 if __name__ == "__main__":
