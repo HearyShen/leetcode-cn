@@ -4,6 +4,7 @@ from collections import Counter
 
 class Solution:
     def countSmaller(self, nums: List[int]) -> List[int]:
+        """Count reverse num with merge sort."""
         self.index2num = {index:num for index, num in enumerate(nums)}
         self.indexes = [i for i in range(len(nums))]
         self.counts = Counter()
@@ -20,6 +21,8 @@ class Solution:
                 merged.append(left.pop(0))
             else:
                 merged.append(right.pop(0))
+                # if nums in right is larger than the left num(s), 
+                # then all left nums should count one more reverse num
                 self.counts.update(left)    # NOTE: key operation, time consuming!
 
         merged.extend(left)
