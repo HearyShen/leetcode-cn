@@ -7,18 +7,22 @@ class Solution:
         """
         Do not return anything, modify board in-place instead.
         """
-        # TODO: 2020.3.19
         if not board:
             return 
         yLen, xLen = len(board), len(board[0])
+        self.isChecked = [[False for x in range(xLen)] for y in range(yLen)]    # record checked ones to prune search space
 
         # traverse and start DFS search
         for yIdx in range(1, yLen-1):
             for xIdx in range(1, xLen-1):
-                if board[yIdx][xIdx] == 'O':
-                    self.dfsModify(yIdx, xIdx, board)
+                if not self.isChecked[yIdx][xIdx] and board[yIdx][xIdx] == 'O':
+                    modified = set()    # record modified ones (presumed as X)
+                    isSurrounded = self.dfsModify(yIdx, xIdx, board, modified)
+                    if not isSurrounded:    # if not surrounded, restore O for all modified
+                        for y, x in modified:
+                            board[y][x] = 'O'
     
-    def dfsModify(self, yIdx, xIdx, board):
+    def dfsModify(self, yIdx, xIdx, board, modified: set):
         """Modify surrounded 'O' with DFS search"""
         if yIdx not in range(len(board)) or xIdx not in range(len(board[0])):
             return False
@@ -26,16 +30,19 @@ class Solution:
         if board[yIdx][xIdx] == 'X':
             return True
         else:
-            board[yIdx][xIdx] = 'X'         # set X as default when entering O to avoid infinite search loop
-            up = self.dfsModify(yIdx-1, xIdx, board)
-            down = self.dfsModify(yIdx+1, xIdx, board)
-            left = self.dfsModify(yIdx, xIdx-1, board)
-            right = self.dfsModify(yIdx, xIdx+1, board)
-            if up and down and left and right:
+            board[yIdx][xIdx] = 'X'         # presume X when entering O to avoid infinite search loop
+            modified.add((yIdx, xIdx))
+            self.isChecked[yIdx][xIdx] = True
+            # if up, down, left, right are all surrounded (use cascade if-and to prune search space)
+            if self.dfsModify(yIdx-1, xIdx, board, modified) \
+                and self.dfsModify(yIdx+1, xIdx, board, modified) \
+                    and self.dfsModify(yIdx, xIdx-1, board, modified) \
+                        and self.dfsModify(yIdx, xIdx+1, board, modified):
                 # board[yIdx][xIdx] = 'X'   # keep X if surrounded
                 return True
             else:
                 board[yIdx][xIdx] = 'O'     # restore O if not surrounded
+                modified.remove((yIdx, xIdx))
                 return False
 
 
