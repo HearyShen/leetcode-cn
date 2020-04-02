@@ -38,3 +38,16 @@ class Solution:
         return True
                 
         
+if __name__ == "__main__":
+    testCases = [([
+        ["1", "1", "1", "1", "0"], 
+        ["1", "1", "0", "1", "0"], 
+        ["1", "1", "0", "0", "0"], 
+        ["0", "0", "0", "0", "0"]], 1)]
+
+    for i, testCase in enumerate(testCases):
+        grid, ans = testCase
+        tic = time.time()
+        ret = Solution().numIslands(grid)
+        toc = time.time()
+        print(f"{i}: {ret == ans}, return {ret} in {toc-tic:.3f}s.")
