@@ -131,3 +131,4 @@ dmypy.json
 # VSCode and Visual Studio
 .vscode/
 .vs/
+.idea/
