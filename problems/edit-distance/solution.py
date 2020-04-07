@@ -3,7 +3,7 @@ import time
 
 class Solution:
     def minDistance(self, word1: str, word2: str) -> int:
-        """BFS with DP"""
+        """referenced from leetcode's official DP solution."""
         n = len(word1)
         m = len(word2)
 
