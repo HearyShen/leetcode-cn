@@ -5,7 +5,6 @@ from typing import List
 class Solution:
     def updateMatrix(self, matrix: List[List[int]]) -> List[List[int]]:
         """Solve with DP"""
-        # TODO: 2020.4.8
         rLen, cLen = len(matrix), len(matrix[0])
         # dist = [[10000] * cLen] * rLen    # ALERT: all the rows actually point to only one list
         dist = [[1000000 for i in range(cLen)] for j in range(rLen)]
