@@ -5,7 +5,6 @@ from typing import List
 class Solution:
     def floodFill(self, image: List[List[int]], sr: int, sc: int, newColor: int) -> List[List[int]]:
         """Solve with BFS"""
-        # TODO: 2020.4.7
         if not image or image[sr][sc] == newColor:
             return image
         rLen, cLen = len(image), len(image[0])
