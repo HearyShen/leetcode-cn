@@ -4,20 +4,31 @@ from typing import List
 
 class Solution:
     def minSubArrayLen(self, s: int, nums: List[int]) -> int:
-        # TODO: 2020.4.10, too slow, out of time
-        minSumLeft = 0
-        minSumRight = len(nums)
+        """Sovled by moving screen methods."""
+        if not nums:
+            return 0
+
+        left = 0
+        right = 0
         hasFound = False
-        for left in range(len(nums)):
-            curSum = 0
-            for right in range(left, len(nums)):
-                curSum += nums[right]
-                if s <= curSum and right - left < minSumRight - minSumLeft:
-                    hasFound = True
-                    minSumLeft = left
-                    minSumRight = right
-        print(f"({minSumLeft}, {minSumRight})")
-        return minSumRight + 1 - minSumLeft if hasFound else 0
+        screenSum = nums[0]
+        minSubLeft, minSubRight = 0, len(nums)
+        while 0 <= left <= right < len(nums):
+            if screenSum >= s:
+                hasFound = True
+                if right - left < minSubRight - minSubLeft:
+                    minSubLeft = left
+                    minSubRight = right
+                # try the smaller sub array if screenSum >= s
+                screenSum -= nums[left]
+                left += 1
+            else:
+                # enlarge the screen if screenSum < s
+                right += 1
+                if right < len(nums):
+                    screenSum += nums[right]
+
+        return minSubRight + 1 - minSubLeft if hasFound else 0
 
 
 if __name__ == '__main__':
