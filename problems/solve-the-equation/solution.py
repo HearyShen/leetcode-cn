@@ -65,11 +65,13 @@ class Solution:
         sign = -1 if parseStack[0] == '-' else 1
         hasX = True if parseStack[-1] == 'x' else False
         num = 0
+        hasNum = False
         for ch in parseStack:
             if ch.isdigit():
+                hasNum = True
                 num = num * 10 + int(ch)
         # if 'x', num should be reset as 1; if '2x', initial num should be 0.
-        num = 1 if hasX and num == 0 else num
+        num = 1 if hasX and not hasNum else num
         return sign * num, hasX
 
 
