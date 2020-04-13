@@ -3,27 +3,26 @@ import time
 
 class Solution:
     def solveEquation(self, equation: str) -> str:
-        # TODO: 2020.4.11
         coef = 0
         rightNum = 0
-        parseStack = []
+        parseList = []
         leftStr, rightStr = equation.strip().split('=')
         # parse left part
         for i in range(len(leftStr)):
             ch = leftStr[i]
             
-            if (ch == '+' or ch == '-') and parseStack:
-                num, hasX = self.parseItem(parseStack)
-                parseStack.clear()
+            if (ch == '+' or ch == '-') and parseList:
+                num, hasX = self.parseItem(parseList)
+                parseList.clear()
                 if hasX:
                     coef += num
                 else:
                     rightNum -= num
 
-            parseStack.append(ch)
-        if parseStack:
-            num, hasX = self.parseItem(parseStack)
-            parseStack.clear()
+            parseList.append(ch)
+        if parseList:
+            num, hasX = self.parseItem(parseList)
+            parseList.clear()
             if hasX:
                 coef += num
             else:
@@ -34,18 +33,18 @@ class Solution:
         for i in range(len(rightStr)):
             ch = rightStr[i]
             
-            if (ch == '+' or ch == '-') and parseStack:
-                num, hasX = self.parseItem(parseStack)
-                parseStack.clear()
+            if (ch == '+' or ch == '-') and parseList:
+                num, hasX = self.parseItem(parseList)
+                parseList.clear()
                 if hasX:
                     coef -= num
                 else:
                     rightNum += num
 
-            parseStack.append(ch)
-        if parseStack:
-            num, hasX = self.parseItem(parseStack)
-            parseStack.clear()
+            parseList.append(ch)
+        if parseList:
+            num, hasX = self.parseItem(parseList)
+            parseList.clear()
             if hasX:
                 coef -= num
             else:
@@ -61,12 +60,12 @@ class Solution:
             return f"x={int(rightNum/coef)}"
     
 
-    def parseItem(self, parseStack):
-        sign = -1 if parseStack[0] == '-' else 1
-        hasX = True if parseStack[-1] == 'x' else False
+    def parseItem(self, parseList):
+        sign = -1 if parseList[0] == '-' else 1
+        hasX = True if parseList[-1] == 'x' else False
         num = 0
         hasNum = False
-        for ch in parseStack:
+        for ch in parseList:
             if ch.isdigit():
                 hasNum = True
                 num = num * 10 + int(ch)
