@@ -1,3 +1,17 @@
+public class SearchInRotatedSortedArray {
+    public static void main(String[] args) {
+        int[][] nums = {{4, 5, 6, 7, 0, 1, 2}, {4, 5, 6, 7, 0, 1, 2}, {}, {1, 3}, {1, 3}};
+        int[] targets = {0, 3, 5, 1, 0};
+        int[] ans = {4, -1, -1, 0, -1};
+        int ret;
+
+        for (int i = 0; i < ans.length; i++) {
+            ret = new Solution().search(nums[i], targets[i]);
+            System.out.printf("{%d: %s}: return {%d}.\n", i, ret == ans[i], ret);
+        }
+    }
+}
+
 class Solution {
     public int search(int[] nums, int target) {
         if (nums.length == 0){
@@ -38,37 +52,23 @@ class Solution {
                 return mid;
             }
         } else if (nums[0] < nums[mid] && nums[mid] > nums[right]) {
-            if (target < nums[mid]) {
-                return Math.max(binarySearch(nums, left, mid - 1, target), binarySearch(nums, mid + 1, right, target));
-            } else if (nums[mid] < target) {
-                return binarySearch(nums, mid + 1, right, target);
-            } else {
+            if (target == nums[mid]){
                 return mid;
+            } else if (nums[0] <= target && target < nums[mid]) {
+                return binarySearch(nums, left, mid - 1, target);
+            } else {
+                return binarySearch(nums, mid + 1, right, target);
             }
 
         } else if (nums[0] > nums[mid] && nums[mid] < nums[right]) {
-            if (nums[mid] < target) {
-                return Math.max(binarySearch(nums, left, mid - 1, target), binarySearch(nums, mid + 1, right, target));
-            } else if (target < nums[mid]) {
-                return binarySearch(nums, left, mid - 1, target);
-            } else {
+            if (target == nums[mid]){
                 return mid;
+            } else if (nums[mid] < target && target <= nums[right]) {
+                return binarySearch(nums, mid + 1, right, target);
+            } else {
+                return binarySearch(nums, left, mid - 1, target);
             }
         }
         return -1;
-    }
-}
-
-public class SearchInRotatedSortedArray {
-    public static void main(String[] args) {
-        int[][] nums = {{4, 5, 6, 7, 0, 1, 2}, {4, 5, 6, 7, 0, 1, 2}, {}, {1, 3}, {1, 3}};
-        int[] targets = {0, 3, 5, 1, 0};
-        int[] ans = {4, -1, -1, 0, -1};
-        int ret;
-
-        for (int i = 0; i < ans.length; i++) {
-            ret = new Solution().search(nums[i], targets[i]);
-            System.out.printf("{%d: %s}: return {%d}.\n", i, ret == ans[i], ret);
-        }
     }
 }
